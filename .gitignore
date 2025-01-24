@@ -1,0 +1,27 @@
+/.settings
+/admin-api/.settings
+/admin-api/target
+/admin-api/.classpath
+/admin-api/.project
+/admin-service/.settings
+/admin-service/target
+/admin-service/.classpath
+/admin-service/.project
+/admin-web/.settings
+/admin-web/target
+/admin-web/.classpath
+/admin-web/.project
+
+/.project
+/admin-web/log
+/admin-service/log
+
+/.idea
+/log
+*.iml
+*rebel*.xml*
+
+# vue-next-admin-backend
+**/package-lock.json
+**/node_modules
+**/dist

@@ -1,0 +1,122 @@
+## default config
+server:
+  port: 10101
+  session:
+    timeout: 3600
+    tracking-modes: cookie
+  context-path: /
+  undertow:
+    accesslog:
+      enabled: true
+      dir: /data/log/vue-admin/admin-web-log/
+      prefix: admin-web-access.
+  error:
+      path: /error
+spring:
+  profiles:
+    active: local
+  http:
+    multipart:
+      max-file-size: 100Mb
+      max-request-size: 100Mb
+  resources:
+    static-locations: classpath:/resources/,classpath:/META-INF/resources/,classpath:/static/
+
+logging:
+  level:
+    root: debug
+  file: /data/log/vue-admin/admin-web-log/admin-web
+
+framework:
+  dubbo:
+    application:
+      name: admin-web
+    registry1:
+      address: zookeeper://zkserver1:2181;zookeeper://zkserver2:2181
+      file: /data/log/vue-admin/admin-web-log/admin-web-dubbo1.cache
+  cache:
+    admin-factory:
+      client-type: redis
+      config-file: META-INF/cache/redis.properties
+    address1: mmserver1:6379
+    address2: mmserver2:6379
+    revision:
+      project-name: admin-web
+
+app:
+  swagger: true
+  fileUploadPath: /data/dev
+  textFileUploadPath: /data/dev/image
+  zipFileName: file.zip
+
+---
+server:
+  undertow:
+    accesslog:
+      dir: @logPath@
+      prefix: admin-web-access.
+  session:
+    timeout: 1800
+  context-path: /dev-api
+
+spring:
+  profiles: local
+logging:
+  file: @logPath@/admin-web
+
+framework:
+  dubbo:
+    registry1:
+      address: zookeeper://localhost:2181
+      file: @logPath@/admin-web-dubbo1.cache
+    resolve-properties: META-INF/properties/dubbo-resolve-dev.properties
+  cache:
+    address1: localhost:6379
+    address2: localhost:6379
+
+app:
+  jsDebug: true
+  fileUploadPath: /uploads/vue-next-admin-backend
+  textFileUploadPath: /uploads/vue-next-admin-backend/image
+  openOfficeHome: C:\Program Files (x86)\OpenOffice 4\program
+  openOfficePath: /uploads/vue-next-admin-backend/openoffice/
+
+---
+server:
+  undertow:
+    accesslog:
+      dir: /mnt/log/vue-admin/admin-web-log/
+  context-path: /test-api
+spring:
+  profiles: test
+
+logging:
+  file: /mnt/log/vue-admin/admin-web-log/admin-web
+
+framework:
+  dubbo:
+    registry1:
+      file: /mnt/log/vue-admin/admin-web-log/admin-web-dubbo1.cache
+
+
+app:
+  fileUploadPath: /mnt/demoupload
+  textFileUploadPath: /mnt/demoupload/image
+  zipFileName: file.zip
+  openOfficeHome: /opt/openoffice4/
+  openOfficePath: /mnt/openoffice/vue-next-admin-backend/
+
+---
+spring:
+  profiles: prd
+
+server:
+  context-path: /prd-api
+
+app:
+  swagger: false
+  fileUploadPath: /data/demoupload
+  textFileUploadPath: /data/demoupload/image
+  zipFileName: file.zip
+  openOfficeHome: /opt/openoffice4/
+  openOfficePath: /data/openoffice/vue-next-admin-backend/

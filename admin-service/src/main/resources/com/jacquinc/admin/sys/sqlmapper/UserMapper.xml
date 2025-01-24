@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jacquinc.admin.sys.sqlmapper.UserMapper">
+
+    <select id="findUserList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.UserVOExt">
+        <include refid="sql_user"/>
+        ORDER BY t.create_ts DESC NULLS LAST
+        <if test="page != null and page.pageSize > 0">
+            <![CDATA[ limit #{page.pageSize} offset (#{page.recordStart}-1) ]]>
+        </if>
+    </select>
+
+    <select id="countUser" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM (<include refid="sql_user"/>) AS dat
+    </select>
+
+    <sql id="sql_user_select">
+        SELECT
+			t.*, t2.name as dept_name, t3.name as corp_name,
+            (select string_agg(r.name, ',') from t_jj_sys_user_role ur
+                LEFT JOIN  t_jj_sys_role r on r.id = ur.role_id
+                where ur.user_id = t.id)as role_name
+		FROM t_jj_sys_user t
+        left join t_jj_sys_department t2 on t.department_id = t2.id
+        left join t_jj_sys_corp t3 on t.corp_id = t3.id
+		WHERE 1=1
+    </sql>
+
+    <sql id="sql_user">
+        <include refid="sql_user_select"/>
+        <include refid="sql_user_where"/>
+    </sql>
+
+    <sql id="sql_user_where">
+        AND COALESCE(t.del_flag, '0') = '0'
+        <if test="condition.id != null and condition.id != ''">
+            AND t.id = #{condition.id}
+        </if>
+
+        <if test="condition.corpId != null and condition.corpId != ''">
+            AND EXISTS (
+                <include refid="CommonMapper.BASE_CORP_RECURSIVE_SQL"/>
+                SELECT
+                    *
+                FROM
+                    corp
+                WHERE 1 = 1
+                    AND corp.id = t.corp_id
+            )
+        </if>
+
+        <if test="condition.excludeSuperAdmin != null and condition.excludeSuperAdmin == '1'.toString()">
+            AND t.id not in ( select urs.user_id
+            from t_jj_sys_user_role urs
+            left join t_jj_sys_role rs on rs.id = urs.role_id
+            where rs.role_type = '01' )
+        </if>
+
+        <if test="condition.userName != null and condition.userName != ''">
+            AND (t.user_name LIKE CONCAT('%', #{condition.userName}, '%')
+                OR t.real_name LIKE CONCAT('%', #{condition.userName}, '%')
+                OR t.job_no LIKE CONCAT('%', #{condition.userName}, '%')
+                OR t.phone LIKE CONCAT('%', #{condition.userName}, '%')
+            )
+        </if>
+
+        <if test="condition.realName != null and condition.realName != ''">
+            AND t.real_name LIKE CONCAT('%', #{condition.realName}, '%')
+        </if>
+
+        <if test="condition.phone != null and condition.phone != ''">
+            AND t.phone LIKE CONCAT('%', #{condition.phone}, '%')
+        </if>
+
+        <if test="condition.active != null and condition.active != ''">
+            AND t.active LIKE CONCAT('%', #{condition.active}, '%')
+        </if>
+        <if test="condition.roleId != null and condition.roleId != ''">
+            and  #{condition.roleId} in (<include refid="sql_user_roleId"/>)
+        </if>
+        <if test="condition.roleIds != null">
+            and t.id in (
+                select ur1.user_id from t_jj_sys_user_role ur1 where ur1.role_id in
+                <foreach collection="condition.roleIds" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            )
+        </if>
+        <if test="condition.roleTypes != null">
+            and t.id in (
+            select ur1.user_id
+            from t_jj_sys_user_role ur1
+            left join t_jj_sys_role r1 on r1.id = ur1.role_id
+             where r1.role_type in
+            <foreach collection="condition.roleTypes" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="condition.departmentId != null and condition.departmentId != ''">
+            AND t.department_id = #{condition.departmentId}
+        </if>
+    </sql>
+
+    <select id="getUserById" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.UserVOExt">
+        <include refid="sql_user_select"/>
+        AND t.id = #{id}
+    </select>
+
+    <select id="getLoginUser" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.UserVOExt">
+        SELECT
+            u.*, t2.name as dept_name, t3.name as corp_name,
+            (select string_agg(r.name, ',') from t_jj_sys_user_role ur
+                LEFT JOIN  t_jj_sys_role r on r.id = ur.role_id
+                where ur.user_id = u.id) as role_name
+        FROM t_jj_sys_user u
+        left join t_jj_sys_department t2 on t2.id = u.department_id
+        left join t_jj_sys_corp t3 on t3.id = u.corp_id
+        WHERE COALESCE(u.del_flag, '') != '1' and (u.user_name = #{username}
+            OR u.phone = #{username}
+            OR u.job_no = #{username})
+    </select>
+
+    <select id="getUserByRoleLevelAndRole" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.UserVOExt">
+        select *
+        from t_jj_sys_user t1
+        left join t_jj_sys_user_corp_rel t2 on t2.user_id = t1.id
+        left join t_jj_sys_corp t3 on t3.id = t2.corp_id
+        left join t_jj_sys_user_role t4 on t4.user_id = t1.id
+        left join t_jj_sys_role t5 on t5.id = t4.role_id
+        where t3.corp_type = #{roleLevel} and t5.role_type = #{role}
+    </select>
+
+    <sql id="sql_user_roleId">
+        select r.id
+        FROM  t_jj_sys_user_role ur
+        LEFT JOIN t_jj_sys_role r ON ur.role_id = r.id
+        where ur.user_id = t.id GROUP BY r.id
+    </sql>
+
+</mapper>

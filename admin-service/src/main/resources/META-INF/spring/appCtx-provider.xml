@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SpringFacetInspection, UnparsedCustomBeanInspection -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+       default-lazy-init="true">
+
+    <dubbo:service interface="com.jacquinc.admin.sys.service.ILogService" ref="logService"/>
+
+    <!-- sys -->
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IUserService" ref="userService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IMenuService" ref="menuService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IPermissionService" ref="permissionService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IRolePermissionService" ref="rolePermissionService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IRoleService" ref="roleService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IUserRoleService" ref="userRoleService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.ICodeService" ref="codeService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IDepartmentService" ref="departmentService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IFileService" ref="fileService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.IAnnounceService" ref="announceService"/>
+    <dubbo:service interface="com.jacquinc.admin.sys.service.ICorpService" ref="corpService"/>
+
+</beans>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>admin-api</module>
+        <module>admin-service</module>
+        <module>admin-web</module>
+    </modules>
+    <parent>
+        <groupId>com.jiujie</groupId>
+        <artifactId>framework-boot</artifactId>
+        <version>5.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>vue-next-admin-backend</artifactId>
+    <version>dev-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- begin 全局设置,被子工程继承 -->
+        <skipRequireRelease>true</skipRequireRelease><!-- 是否跳过 必须依赖正式版本的检查 -->
+        <!-- end -->
+        <!-- begin 框架版本 -->
+        <!-- end -->
+        <!-- begin 外部api -->
+        <!-- end -->
+        <!-- begin 其它第三方开源版本定义 -->
+        <postgresql.version>42.7.5</postgresql.version>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+        <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+        <knife4j-spring-boot-starter.version>2.0.2</knife4j-spring-boot-starter.version>
+
+        <apache.httpcomponents.httpcore.version>4.4.10</apache.httpcomponents.httpcore.version>
+        <apache.httpcomponents.httpclient.version>4.5.2</apache.httpcomponents.httpclient.version>
+        <poi.version>3.15</poi.version>
+        <!-- end -->
+    </properties>
+
+    <!--指定Nexus的构件仓库-->
+    <repositories>
+        <repository>
+            <id>public</id>
+            <url>http://120.79.137.53:8081/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <!--指定Nexus的插件仓库-->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <url>http://120.79.137.53:8081/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- 依赖预配置 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox-swagger2.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-models</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+                <version>1.5.21</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox-swagger-ui.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.18</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.47</version>
+            </dependency>
+
+            <!-- 全项目poi相关版本固定，支持easyExcel -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-schemas</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <!-- 如果使用框架默认的2.6版本，会导致单元测试的资源文件未拷贝到对应的target目录下 -->
+                    <version>2.5</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <!-- 是否使用默认的 ${} 占位符 -->
+                        <useDefaultDelimiters>false</useDefaultDelimiters>
+                        <delimiters>
+                            <!-- 更换默认的 ${} 解决和jsp的EL表达式冲突 -->
+                            <delimiter>$[*]</delimiter>
+                        </delimiters>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>api</id>
+            <modules>
+                <module>admin-api</module>
+            </modules>
+        </profile>
+        <profile>
+            <!-- 开发环境为windows系统将生效 -->
+            <id>dev-windows</id>
+            <modules>
+                <module>admin-api</module>
+                <module>admin-service</module>
+                <module>admin-web</module>
+            </modules>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <logPath>../../logs/vue-next-admin-backend</logPath>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 开发环境为mac系统将生效 -->
+            <id>dev-mac</id>
+            <modules>
+                <module>admin-api</module>
+                <module>admin-service</module>
+                <module>admin-web</module>
+            </modules>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <logPath>../logs/vue-next-admin-backend</logPath>
+            </properties>
+        </profile>
+    </profiles>
+</project>

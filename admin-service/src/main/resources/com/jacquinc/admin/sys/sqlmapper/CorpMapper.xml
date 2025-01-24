@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jacquinc.admin.sys.sqlmapper.CorpMapper">
+
+    <select id="findCorpList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.CorpVOExt">
+        <include refid="CommonMapper.BASE_CORP_RECURSIVE_SQL"/>
+        select distinct id,corp.name,parent_corp_id,parent_name,code,corp_type,short_name from corp
+        where 1=1
+        order by corp.name
+    </select>
+
+    <select id="getCorpInfoById" parameterType="java.util.Map"  resultType="com.jacquinc.admin.sys.vo.CorpVOExt">
+        select t.*
+        from t_jj_sys_corp t
+        where t.id = #{corpId}
+    </select>
+</mapper>

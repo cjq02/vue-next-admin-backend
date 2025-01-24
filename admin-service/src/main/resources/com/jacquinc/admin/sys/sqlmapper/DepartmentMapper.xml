@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jacquinc.admin.sys.sqlmapper.DepartmentMapper">
+
+    <select id="getDepartmentCount" parameterType="java.util.Map" resultType="java.lang.Long">
+        <include refid="CommonMapper.BASE_CORP_RECURSIVE_SQL"/>
+        select count(0) from t_jj_sys_department t1
+        where 1=1
+        <include refid="BASE_WHERE" />
+    </select>
+
+    <select id="findDepartmentList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.DepartmentVOExt">
+        <include refid="CommonMapper.BASE_CORP_RECURSIVE_SQL"/>
+        select t1.*, t4.name as parent_name, t3.config_name as type_name, t5.name as corp_name from t_jj_sys_department t1
+        left join t_jj_sys_code t3 on t3.type_code = 'DEPARTMENT_TYPE' and t3.config_code = t1.type
+        left join t_jj_sys_department t4 on t4.id = t1.parent_id
+        left join t_jj_sys_corp t5 on t5.id = t1.corp_id
+        where 1=1
+        <include refid="BASE_WHERE" />
+        order by t1.code
+        <if test="page != null">
+            limit #{page.pageSize} offset (#{page.recordStart}-1)
+        </if>
+    </select>
+
+    <sql id="BASE_WHERE">
+        <if test="condition.name != null and condition.name != ''">
+            and t1.name like CONCAT('%', #{condition.name}, '%')
+        </if>
+        <if test="condition.nickName != null and condition.nickName != ''">
+            and t1.nick_name like CONCAT('%', #{condition.nickName}, '%')
+        </if>
+        <if test="condition.type != null and condition.type != ''">
+            and t1.type = #{condition.type}
+        </if>
+        <if test="condition.corpId != null and condition.corpId != ''">
+            and t1.corp_id = #{condition.corpId}
+        </if>
+    </sql>
+
+    <select id="countByTreeId" parameterType="java.util.Map" resultType="java.lang.Long">
+        WITH RECURSIVE department(id, name, parent_id, parent_name, code) AS (
+            SELECT t1.id, t1.name, t1.parent_id, t2.name as parent_name, t1.code
+            FROM t_jj_sys_department t1
+            left join t_jj_sys_department t2 on t2.id = t1.parent_id
+            WHERE 1 = 1 and t1.id = #{id}
+            UNION ALL
+            SELECT T1.id, T1.name, T1.parent_id, department.name as parent_name, t1.code
+            FROM t_jj_sys_department T1 JOIN department ON T1.parent_id = department.id
+            where 1 = 1
+        )
+        select count(0) from department
+    </select>
+
+    <select id="findByProjectId" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.DepartmentVOExt">
+        select t1.*, t2.name as corp_name, t3.name from t_jj_project_department_rel t1
+        left join t_jj_sys_corp t2 on t2.id = t1.corp_id
+        left join t_jj_sys_department t3 on t3.id = t1.department_id and t3.corp_id = t1.corp_id
+        where t1.project_id = #{projectId}
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+		xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="true">
+
+
+	<dubbo:reference interface="com.jiujie.workflow.activiti.service.IVueActModelService" id="vueActModelService" check="false" retries="0" timeout="60000"/>
+	<dubbo:reference interface="com.jiujie.workflow.activiti.service.IActivitiBizService" id="activitiBizService" check="false" retries="0" timeout="60000"/>
+	<dubbo:reference interface="com.jiujie.baseService.sys.service.ISerialService" id="serialService" />
+
+
+</beans>

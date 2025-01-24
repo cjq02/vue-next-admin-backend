@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jacquinc.admin.sys.sqlmapper.CodeMapper">
+
+    <select id="findCodeList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.CodeVOExt">
+		<include refid="sql_code"/>
+
+		ORDER BY
+			type_code,
+			index_no
+
+		<if test="page != null and page.pageSize > 0">
+			<![CDATA[ limit #{page.pageSize} offset (#{page.recordStart}-1) ]]>
+		</if>
+    </select>
+
+    <select id="countCode" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+			COUNT(*)
+		FROM (
+			<include refid="sql_code"/>
+		) AS dat
+    </select>
+
+    <sql id="sql_code">
+		SELECT
+			*
+		FROM
+			t_jj_sys_code t
+		WHERE 1=1
+
+		<include refid="sql_code_where"/>
+    </sql>
+
+	<select id="findCodeGroupList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.CodeVOExt">
+		<include refid="sql_code_group"/>
+
+		ORDER BY
+			type_code
+
+		<if test="page != null and page.pageSize > 0">
+			<![CDATA[ limit #{page.pageSize} offset (#{page.recordStart}-1) ]]>
+		</if>
+    </select>
+
+    <select id="countCodeGroup" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+			COUNT(*)
+		FROM (
+			<include refid="sql_code_group"/>
+		) AS dat
+    </select>
+
+	<sql id="sql_code_group">
+		SELECT
+			t.type_code AS id,
+			t.type_code,
+			t.type_name,
+			MAX(create_ts) AS create_ts,
+			MAX(update_ts) AS update_ts
+		FROM
+			t_jj_sys_code t
+		WHERE 1=1
+
+		<include refid="sql_code_where"/>
+
+		GROUP BY
+			t.type_code,
+			t.type_name
+    </sql>
+
+	<sql id="sql_code_where">
+		<if test="condition.id != null and condition.id != ''">
+			AND t.id = #{condition.id}
+		</if>
+
+		<if test="condition.typeName != null and condition.typeName != ''">
+			AND t.type_name LIKE CONCAT('%', #{condition.typeName}, '%')
+		</if>
+
+		<if test="condition.typeCode != null and condition.typeCode != ''">
+			AND t.type_code LIKE CONCAT('%', #{condition.typeCode}, '%')
+		</if>
+
+		<if test="condition.configCode != null and condition.configCode != ''">
+			AND t.config_code = #{condition.configCode}
+		</if>
+
+		<if test="typeCode != null and typeCode != ''">
+			AND t.type_code = #{typeCode}
+		</if>
+	</sql>
+
+</mapper>

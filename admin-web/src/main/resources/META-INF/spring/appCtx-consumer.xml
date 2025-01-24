@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress UnparsedCustomBeanInspection -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+       default-lazy-init="true">
+
+    <!--base api service-->
+    <dubbo:reference interface="com.jiujie.baseService.sys.service.IPhoneAuthCodeService" id="phoneAuthCodeService"/>
+
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.ILogService" id="logService"/>
+
+    <!-- sys -->
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IUserService" id="userService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IMenuService" id="menuService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IPermissionService" id="permissionService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IRolePermissionService" id="rolePermissionService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IRoleService" id="roleService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IUserRoleService" id="userRoleService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.ICodeService" id="codeService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IDepartmentService" id="departmentService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IFileService" id="fileService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.IAnnounceService" id="announceService"/>
+    <dubbo:reference interface="com.jacquinc.admin.sys.service.ICorpService" id="corpService"/>
+
+</beans>

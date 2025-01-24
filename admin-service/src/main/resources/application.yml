@@ -1,0 +1,109 @@
+## default config
+spring:
+  profiles:
+    active: local
+  aop:
+    auto: true
+    proxy-target-class: true
+  datasource:
+    name: dataSource
+    type: org.apache.tomcat.jdbc.pool.DataSource
+    driver-class-name: org.postgresql.Driver
+    tomcat:
+      jdbc-interceptors: ConnectionState;StatementFinalizer
+      validation-query: select 1
+
+framework:
+  mybatis:
+    base-packages: com.jacquinc,com.jiujie.framework
+    mapper-locations:
+      - classpath*:com/jacquinc/**/*Mapper.xml
+      - classpath*:com/jiujie/framework/FrameworkMapper.xml
+  dubbo:
+    application:
+      name: admin-service
+    protocol:
+      port: 20236
+    registry1:
+      address: zookeeper://zkserver1:2181;zookeeper://zkserver2:2181
+      file: /data/log/vue-next-admin-backend/admin-service-log/admin-service-dubbo1.cache
+  cache:
+    admin-factory:
+      client-type: redis
+      config-file: META-INF/cache/redis.properties
+    address1: mmserver1:6379
+    address2: mmserver2:6379
+    revision:
+      project-name: admin-service
+      delay: 10
+  rocketMQ:
+    namesrvAddr: rocketMQ:9876
+
+logging:
+  config: classpath:logback.xml
+  level:
+    root: debug
+  file: /data/log/vue-next-admin-backend/admin-service-log/admin-service
+
+app:
+  defaultPassword: demo123456
+  reportVideoFlag: 0
+  openOfficePath: /data/openoffice/vue-admin/
+
+
+---
+spring:
+  profiles: local
+  datasource:
+    url: jdbc:postgresql://localhost:5433/admin_db
+    username: admin
+    password: 123456
+
+logging:
+  file: @logPath@/admin-service
+app:
+
+framework:
+  dubbo:
+    registry1:
+      address: zookeeper://localhost:2181;
+      file: @logPath@/admin-service-dubbo1.cache
+    resolve-properties: META-INF/properties/dubbo-resolve.properties
+  cache:
+    address1: localhost:6379
+    address2: localhost:6379
+  rocketMQ:
+    namesrvAddr: localhost:9876
+
+---
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:postgresql://localhost:5433/admin_db
+    username: admin
+    password: 123456
+
+framework:
+  rocketMQ:
+    namesrvAddr: 124.232.157.137:9876
+  dubbo:
+    registry1:
+      file: /mnt/log/vue-admin/admin-service-log/admin-service-dubbo1.cache
+
+logging:
+  file: /mnt/log/vue-admin/admin-service-log/admin-service
+
+---
+spring:
+  profiles: prd
+  datasource:
+    url: jdbc:postgresql://localhost:5433/admin_db
+    username: admin
+    password: 123456
+
+framework:
+  dubbo:
+    registry1:
+      address: zookeeper://127.0.0.1:2181
+  rocketMQ:
+      namesrvAddr: 192.141.29.16:9876

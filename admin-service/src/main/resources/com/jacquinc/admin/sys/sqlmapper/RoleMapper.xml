@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jacquinc.admin.sys.sqlmapper.RoleMapper">
+
+    <select id="findRoleList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.RoleVOExt">
+		<include refid="sql_role"/>
+
+		ORDER BY
+		    role_type
+
+		<if test="page != null and page.pageSize > 0">
+			<![CDATA[ limit #{page.pageSize} offset (#{page.recordStart}-1) ]]>
+		</if>
+    </select>
+
+    <select id="countRole" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+			COUNT(*)
+		FROM (
+			<include refid="sql_role"/>
+
+		) AS dat
+    </select>
+
+	<select id="findRoleSelectList" parameterType="java.util.Map" resultType="com.jacquinc.admin.sys.vo.RoleVOExt">
+		SELECT
+			*
+		FROM
+			t_jj_sys_role t
+		WHERE 1=1
+
+		<if test="inputValue != null and inputValue != ''">
+			AND t.name LIKE CONCAT('%', #{inputValue}, '%')
+		</if>
+
+		<if test="roleType != null and roleType != ''">
+			AND t.role_type >= #{roleType}
+		</if>
+
+		ORDER BY
+			t.role_type
+    </select>
+    
+    <sql id="sql_role">
+		SELECT
+			*
+		FROM
+			t_jj_sys_role t
+		WHERE 1=1
+
+		<if test="condition.name != null and condition.name != ''">
+			AND t.name LIKE CONCAT('%', #{condition.name}, '%')
+		</if>
+
+		<if test="condition.userId != null and condition.userId != ''">
+			AND EXISTS (
+				SELECT
+					1
+				FROM
+					t_jj_sys_user_role r
+				WHERE 1=1
+					AND t.id = r.role_id
+					AND r.user_id = #{condition.userId}
+			)
+		</if>
+    </sql>
+
+</mapper>
