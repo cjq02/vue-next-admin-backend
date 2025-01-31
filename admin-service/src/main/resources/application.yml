@@ -23,7 +23,7 @@ framework:
     application:
       name: admin-service
     protocol:
-      port: 20236
+      port: 11101
     registry1:
       address: zookeeper://zkserver1:2181;zookeeper://zkserver2:2181
       file: /data/log/vue-next-admin-backend/admin-service-log/admin-service-dubbo1.cache
